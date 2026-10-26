@@ -1,0 +1,105 @@
+# Calendario y web de Casa Sofia en Grazalema
+#
+# Cada 2 horas (y cuando tu quieras, con "Run workflow"):
+#   1) descarga el calendario de Booking con el secreto BOOKING_ICAL_URL,
+#   2) si han cambiado las noches ocupadas, actualiza availability.json,
+#   3) vuelve a publicar la web en GitHub Pages (con el calendario y con configuracion-reservas.json).
+#
+# Los precios, los descuentos, las temporadas y las fechas bloqueadas a mano estan en configuracion-reservas.json.
+# Se cambian desde el panel de administracion de la web (el enlace "Acceso del propietario" al final de tu web), que sube
+# el archivo a este repositorio, o editando el archivo con el lapiz en GitHub. Al guardarse, la web se vuelve a
+# publicar sola. Antes de publicar se comprueba que el archivo esta bien escrito; si no, esta tarea falla (te llega
+# un correo) y la web se queda con la configuracion anterior.
+#
+# IMPORTANTE: la web se publica desde aqui (no desde "Deploy from a branch"), porque GitHub no
+# republica la web cuando el cambio lo hace una tarea automatica. En Settings > Pages hay que
+# elegir Source: "GitHub Actions".
+
+name: Calendario y web
+
+on:
+  schedule:
+    - cron: "23 */2 * * *"   # cada 2 horas (hora UTC); GitHub puede retrasarlo unos minutos
+  workflow_dispatch:          # boton "Run workflow" en la pestana Actions
+  push:                       # al subir cambios de la web (no cuando solo cambia el calendario)
+    branches: [main]
+    paths-ignore:
+      - "availability.json"
+      - "README.md"
+
+concurrency:
+  group: calendario-y-web
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    name: Leer el calendario de Booking
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Descargar el calendario de Booking
+        env:
+          BOOKING_ICAL_URL: ${{ secrets.BOOKING_ICAL_URL }}
+          # Primer dia desde el que Booking.com no tiene nada a la venta (el calendario de Booking no
+          # lista las noches que nunca abrio). Cuando abras fechas nuevas en Booking, borra esta linea
+          # o cambia la fecha (formato AAAA-MM-DD). Si la fecha ya ha pasado, se ignora sola.
+          CLOSED_FROM: "2027-02-01"
+        run: python3 tools/sync_calendar.py
+
+      - name: Guardar el calendario si ha cambiado
+        id: commit
+        run: |
+          if [ -n "$(git status --porcelain -- availability.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add availability.json
+            git commit -m "Calendario de Booking actualizado"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    name: Publicar la web
+    needs: sync
+    # Siempre al subir cambios o al pulsar "Run workflow"; en las ejecuciones programadas, solo si el calendario ha cambiado.
+    if: ${{ !cancelled() && (needs.sync.outputs.changed == 'true' || github.event_name != 'schedule') }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}   # la version mas reciente, ya con el calendario nuevo
+
+      - name: Comprobar el archivo de reservas y precios
+        run: python3 tools/check_config.py configuracion-reservas.json --gh
+
+      - name: Preparar los archivos de la web
+        run: |
+          mkdir _site
+          cp index.html availability.json configuracion-reservas.json _site/
+          cp -r img _site/img
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+      - name: Publicar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

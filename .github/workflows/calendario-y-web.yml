@@ -45,6 +45,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Ordenar los archivos (por si se subieron sin carpetas)
+        run: |
+          mkdir -p tools img
+          for f in sync_calendar.py ical_to_availability.py check_config.py; do
+            if [ -f "$f" ] && [ ! -f "tools/$f" ]; then cp "$f" tools/; fi
+          done
+          for f in *.jpg; do
+            if [ -f "$f" ] && [ ! -f "img/$f" ]; then cp "$f" img/; fi
+          done
+
       - name: Descargar el calendario de Booking
         env:
           BOOKING_ICAL_URL: ${{ secrets.BOOKING_ICAL_URL }}
@@ -86,6 +96,16 @@ jobs:
       - uses: actions/checkout@v7
         with:
           ref: ${{ github.ref_name }}   # la version mas reciente, ya con el calendario nuevo
+
+      - name: Ordenar los archivos (por si se subieron sin carpetas)
+        run: |
+          mkdir -p tools img
+          for f in sync_calendar.py ical_to_availability.py check_config.py; do
+            if [ -f "$f" ] && [ ! -f "tools/$f" ]; then cp "$f" tools/; fi
+          done
+          for f in *.jpg; do
+            if [ -f "$f" ] && [ ! -f "img/$f" ]; then cp "$f" img/; fi
+          done
 
       - name: Comprobar el archivo de reservas y precios
         run: python3 tools/check_config.py configuracion-reservas.json --gh

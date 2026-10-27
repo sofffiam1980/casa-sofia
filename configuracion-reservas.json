@@ -1,12 +1,18 @@
 {
   "precioBase": 170,
   "nochesMinimas": 2,
+  "mascota": 20,
+  "fianza": 150,
   "descuentos": [
-    { "desde": 3, "pct": 10 },
-    { "desde": 6, "pct": 25 }
+    {
+      "desde": 3,
+      "pct": 10
+    },
+    {
+      "desde": 6,
+      "pct": 25
+    }
   ],
   "temporadas": [],
-  "bloqueos": [],
-  "mascota": 20,
-  "fianza": 150
+  "bloqueos": []
 }

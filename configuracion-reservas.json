@@ -60,6 +60,13 @@
       "hasta": "2027-01-03",
       "precio": 170,
       "minNoches": 3
+    },
+    {
+      "nombre": "Despues nochevieja",
+      "desde": "2027-01-02",
+      "hasta": "2027-01-03",
+      "precio": 180,
+      "minNoches": 3
     }
   ],
   "bloqueos": []

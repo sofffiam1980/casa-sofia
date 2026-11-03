@@ -39,6 +39,13 @@
       "hasta": "2026-12-26",
       "precio": 220,
       "minNoches": 3
+    },
+    {
+      "nombre": "Nochevieja",
+      "desde": "2026-12-31",
+      "hasta": "2027-01-01",
+      "precio": 249,
+      "minNoches": 3
     }
   ],
   "bloqueos": []

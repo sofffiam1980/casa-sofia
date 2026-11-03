@@ -36,13 +36,6 @@
     {
       "nombre": "Nochebuena",
       "desde": "2026-12-24",
-      "hasta": "2026-12-26",
-      "precio": 220,
-      "minNoches": 3
-    },
-    {
-      "nombre": "Nochebuena",
-      "desde": "2026-12-24",
       "hasta": "2026-12-25",
       "precio": 220,
       "minNoches": 3

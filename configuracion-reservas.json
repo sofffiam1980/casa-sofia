@@ -32,13 +32,6 @@
       "hasta": "2026-12-07",
       "precio": 225,
       "minNoches": 3
-    },
-    {
-      "nombre": "puente 4 noches",
-      "desde": "2026-12-04",
-      "hasta": "2026-12-07",
-      "precio": 200,
-      "minNoches": 4
     }
   ],
   "bloqueos": []

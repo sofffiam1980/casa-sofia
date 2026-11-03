@@ -48,6 +48,13 @@
       "minNoches": 3
     },
     {
+      "nombre": "Despues nochebuena",
+      "desde": "2026-12-26",
+      "hasta": "2026-12-27",
+      "precio": 170,
+      "minNoches": 3
+    },
+    {
       "nombre": "Nochevieja",
       "desde": "2026-12-31",
       "hasta": "2027-01-01",

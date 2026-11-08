@@ -2693,7 +2693,7 @@ mix-blend-mode:var(--spot-blend)}
         helpIn: function (d, n) { return 'Entrada: ' + this.short(d) + '. Ahora elige el día de salida' + (n > 1 ? ' (como pronto el ' + this.short(addDays(d, n)) + ', mínimo ' + n + ' noches).' : '.'); },
         minNote: function (n) { return n > 1 ? ' Estancia mínima: ' + n + ' noches.' : ''; },
         minBanner: function (n) { return 'Estancia mínima: ' + n + ' noches'; },
-        minBannerSub: function (n) { return 'Elige al menos ' + n + ' noches para poder reservar.'; },
+        minBannerSub: function (n) { return 'Puentes y festivos: consúltanos.'; },
         minBannerSeason: 'Estancia mínima según la fecha',
         seasonMin: function (r) { return 'Con entrada ' + (r.a === r.b ? 'el ' + this.dm(parse(r.a)) : 'del ' + this.dm(parse(r.a)) + ' al ' + this.dm(parse(r.b))) + ': mínimo ' + r.n + (r.n === 1 ? ' noche.' : ' noches.'); },
         minChangedMsg: function (n) { return 'La estancia mínima es de ' + n + ' noches y tus fechas no llegan. Elige otras.'; },
@@ -2743,7 +2743,7 @@ mix-blend-mode:var(--spot-blend)}
         helpIn: function (d, n) { return 'Check-in: ' + this.short(d) + '. Now pick your check-out day' + (n > 1 ? ' (' + this.short(addDays(d, n)) + ' at the earliest, minimum ' + n + ' nights).' : '.'); },
         minNote: function (n) { return n > 1 ? ' Minimum stay: ' + n + ' nights.' : ''; },
         minBanner: function (n) { return 'Minimum stay: ' + n + ' nights'; },
-        minBannerSub: function (n) { return 'Choose at least ' + n + ' nights to book.'; },
+        minBannerSub: function (n) { return 'Long weekends and holidays: please ask.'; },
         minBannerSeason: 'Minimum stay depends on the dates',
         seasonMin: function (r) { return (r.a === r.b ? 'Check-in on ' + this.dm(parse(r.a)) : 'Check-in from ' + this.dm(parse(r.a)) + ' to ' + this.dm(parse(r.b))) + ': minimum ' + r.n + (r.n === 1 ? ' night.' : ' nights.'); },
         minChangedMsg: function (n) { return 'The minimum stay is ' + n + ' nights and your dates are shorter. Please pick others.'; },
@@ -3024,7 +3024,7 @@ mix-blend-mode:var(--spot-blend)}
         mb.hidden = !(n >= 2 || ov.length);
         if (!mb.hidden) {
           for (i = 0; i < ov.length; i++) parts.push(L.seasonMin(ov[i]));
-          if (n >= 2) { t = L.minBanner(n); s = L.minBannerSub(n) + (parts.length ? ' ' + parts.join(' ') : ''); }
+          if (n >= 2) { t = L.minBanner(n); s = L.minBannerSub(n); }   // the per-season minimums are not listed (owner's choice)
           else { t = L.minBannerSeason; s = parts.join(' '); }
           $('#minstay-t').textContent = t;
           $('#minstay-s').textContent = s;
@@ -3056,7 +3056,7 @@ mix-blend-mode:var(--spot-blend)}
       if (line) {
         line.hidden = false;
         line.textContent = '';
-        parts = L.priceLine(money(rc.precioBase), hasSpecials());
+        parts = L.priceLine(money(rc.precioBase), false);
         strong = document.createElement('strong');
         strong.textContent = parts[0];
         line.appendChild(strong);
@@ -3212,7 +3212,7 @@ mix-blend-mode:var(--spot-blend)}
         c.btn.className = 'day' + (isStart || isEnd ? ' is-sel' : '') + (ghost && !isEnd ? ' is-ghost' : '');
         c.btn.setAttribute('aria-disabled', enabled ? 'false' : 'true');
         var pr = !past && !isBusy(d) ? priceOf(d) : null;
-        if (pr) { c.btn.setAttribute('data-p', fmtNum(pr)); if (pr !== rc.precioBase) c.btn.setAttribute('data-s', '1'); else c.btn.removeAttribute('data-s'); }
+        if (pr) { c.btn.setAttribute('data-p', fmtNum(pr)); c.btn.removeAttribute('data-s'); }   // days with another price are not circled (owner's choice)
         else { c.btn.removeAttribute('data-p'); c.btn.removeAttribute('data-s'); }
         c.btn.setAttribute('aria-label', L.long(d) + ', ' + st + (pr ? ', ' + L.perNight(fmtNum(pr)) : ''));
         c.btn.tabIndex = c.iso === rv ? 0 : -1;

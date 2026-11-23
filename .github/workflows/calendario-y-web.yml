@@ -116,10 +116,10 @@ jobs:
           cp index.html availability.json configuracion-reservas.json _site/
           cp -r img _site/img
 
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
       - name: Publicar en GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4

@@ -109,7 +109,10 @@ jobs:
 
       - name: Comprobar el archivo de reservas y precios
         run: python3 tools/check_config.py configuracion-reservas.json --gh
-
+        
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+        
       - name: Preparar los archivos de la web
         run: |
           mkdir _site
